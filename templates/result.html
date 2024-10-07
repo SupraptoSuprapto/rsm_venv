@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Model Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .plot-img {
+            max-width: 100%;
+            height: auto;
+        }
+        .section {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Model Training Results</h1>
+        
+        <div class="section">
+            <h3>Regression Equation</h3>
+            <p>{{ regression_equation }}</p>
+        </div>
+        
+        <div class="section">
+            <h3>Model Performance</h3>
+            <p><strong>R-squared:</strong> {{ r_squared | round(4) }}</p>
+        </div>
+        
+        <div class="section">
+            <h3>Feature Coefficients</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Coefficient</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for feature, coef in feature_coefficients %}
+                    <tr>
+                        <td>{{ feature }}</td>
+                        <td>{{ coef | round(4) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h3>Uploaded Data</h3>
+            {{ data_table | safe }}
+        </div>
+        
+        <div class="section">
+            <h3>Response Surface Plots</h3>
+            <div class="row">
+                {% for plot in plot_images %}
+                <div class="col-md-6">
+                    <img src="{{ url_for('static', filename='plots/' ~ plot) }}" alt="RSM Plot" class="plot-img mb-4">
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>Residual Analysis</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Residual Plot</h5>
+                    <img src="data:image/png;base64,{{ plot_residuals }}" alt="Residual Plot" class="plot-img mb-4">
+                </div>
+                <div class="col-md-6">
+                    <h5>Histogram of Residuals</h5>
+                    <img src="data:image/png;base64,{{ plot_histogram }}" alt="Residual Histogram" class="plot-img mb-4">
+                </div>
+            </div>
+            <p><strong>Shapiro-Wilk Test p-value:</strong> {{ p_value | round(4) }}</p>
+            {% if p_value > 0.05 %}
+                <p>The residuals are likely normally distributed.</p>
+            {% else %}
+                <p>The residuals are not normally distributed.</p>
+            {% endif %}
+        </div>
+        
+        <div class="section">
+            <h3>Make a Prediction</h3>
+            <form action="{{ url_for('predict') }}" method="post">
+                {% for i in range(1,4) %}
+                <div class="mb-3">
+                    <label for="x{{i}}" class="form-label">Feature x{{i}}</label>
+                    <input type="number" step="any" class="form-control" id="x{{i}}" name="x{{i}}" required>
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-success">Predict Y</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
