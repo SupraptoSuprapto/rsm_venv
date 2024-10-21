@@ -15,7 +15,7 @@ matplotlib==3.4.3
 numpy==1.21.2
 openpyxl==3.1.5
 packaging==24.1
-pandas==2.2.3
+pandas>=1.0.0
 pillow==10.4.0
 pyparsing==3.1.4
 python-dateutil==2.9.0.post0
